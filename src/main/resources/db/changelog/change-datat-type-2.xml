@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd">
+    <changeSet id="1774733663716-1" author="mainHossein">
+        <sql>
+            ALTER TABLE transaction
+            ALTER COLUMN status TYPE VARCHAR(255) USING status::VARCHAR;
+        </sql>
+        <sql>
+            ALTER TABLE transaction
+                ADD CONSTRAINT check_transaction_status CHECK (status IN ('PASSED', 'FAILED'));
+        </sql>
+    </changeSet>
+</databaseChangeLog>

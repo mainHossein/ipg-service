@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd">
+    <changeSet id="1774524540979-1" author="mainHossein">
+        <sql>
+            CREATE TYPE account_status AS ENUM (
+                'OPEN',
+                'CLOSE'
+            );
+        </sql>
+        <sql>
+            CREATE TYPE transaction_status AS ENUM (
+                'PASSED',
+                'FAILED'
+            );
+        </sql>
+        <createSequence sequenceName="card_id_seq" startValue="100000000" incrementBy="1" cacheSize="1"/>
+        <createTable tableName="account">
+            <column name="card_id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="national_id" type="bigint">
+                <constraints foreignKeyName="national_id_fk" referencedTableSchemaName="public"
+                             referencedTableName="users" referencedColumnNames="national_id"/>
+            </column>
+            <column name="balance" type="bigint" defaultValue="0"/>
+            <column name="status" type="account_status" defaultValue="OPEN"/>
+            <column name="created_at" type="java.sql.timestamp"/>
+        </createTable>
+        <createTable tableName="transaction">
+            <column name="transaction_id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="buyer_card_id" type="bigint">
+                <constraints foreignKeyName="buyer_card_id_fk" referencedTableSchemaName="public"
+                             referencedTableName="account" referencedColumnNames="card_id"/>
+            </column>
+            <column name="fee" type="bigint"/>
+            <column name="status" type="transaction_status"/>
+            <column name="transaction_time" type="java.sql.timestamp"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

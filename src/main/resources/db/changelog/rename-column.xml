@@ -4,8 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd">
-    <include file="db/changelog/inti-table-account-and-transaction.xml"/>
-    <include file="db/changelog/change-data-type.xml"/>
-    <include file="db/changelog/change-datat-type-2.xml"/>
-    <include file="db/changelog/rename-column.xml"/>
+    <changeSet id="1774907173737-1" author="mainHossein">
+        <renameColumn tableName="transaction" oldColumnName="buyer_card_id" newColumnName="account_card_id"/>
+    </changeSet>
 </databaseChangeLog>

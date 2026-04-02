@@ -115,24 +115,24 @@ public class AccountController {
         Transaction savedTransaction;
         transactions = new HashSet<>();
         long fee = purchase.getFee();
-        long buyerId = purchase.getBuyerId();
+        long cardId = purchase.getCardId();
 
         transactionDtoPost.setFee(fee);
 
-        if (accountService.accountValid(buyerId)) {
-            if (accountService.accountIsOpen(buyerId)) {
-                if (accountService.checkBalance(buyerId, fee)) {
-                    accountService.decreaseBalance(buyerId, fee);
+        if (accountService.accountValid(cardId)) {
+            if (accountService.accountIsOpen(cardId)) {
+                if (accountService.checkBalance(cardId, fee)) {
+                    accountService.decreaseBalance(cardId, fee);
                     accountService.increaseShopBalance(fee);
                     status.setStatusCode(200);
                     status.setMessage("Successful transaction");
-                    transactionDtoPost.setAccount(accountService.getReferencedAccount(buyerId));
+                    transactionDtoPost.setAccount(accountService.getReferencedAccount(cardId));
                     transactionDtoPost.setStatus(TransactionStatus.PASSED);
                     savedTransaction = transactionService.saveTransaction(transactionDtoPost);
                 } else {
                     status.setMessage("Not enough balance");
                     status.setStatusCode(400);
-                    transactionDtoPost.setAccount(accountService.getReferencedAccount(buyerId));
+                    transactionDtoPost.setAccount(accountService.getReferencedAccount(cardId));
                     transactionDtoPost.setStatus(TransactionStatus.FAILED);
                     savedTransaction = transactionService.saveTransaction(transactionDtoPost);
                 }
@@ -140,7 +140,7 @@ public class AccountController {
             } else {
                 status.setMessage("This account is closed");
                 status.setStatusCode(400);
-                transactionDtoPost.setAccount(accountService.getReferencedAccount(buyerId));
+                transactionDtoPost.setAccount(accountService.getReferencedAccount(cardId));
                 transactionDtoPost.setStatus(TransactionStatus.FAILED);
                 savedTransaction = transactionService.saveTransaction(transactionDtoPost);
             }
@@ -217,7 +217,7 @@ public class AccountController {
                 } else {
                     accountService.openAccount(cardId);
                     status.setStatusCode(204);
-                    status.setMessage("Account successfully is open");
+                    status.setMessage("Account is successfully open");
                 }
             } else if (Objects.equals(fetchedAccountStatus, "CLOSE")) {
                 if (!accountService.accountIsOpen(cardId)) {
@@ -226,7 +226,7 @@ public class AccountController {
                 } else {
                     accountService.closeAccount(cardId);
                     status.setStatusCode(204);
-                    status.setMessage("Account successfully closed");
+                    status.setMessage("Account is successfully closed");
                 }
             } else {
                 status.setStatusCode(400);
@@ -234,59 +234,6 @@ public class AccountController {
             }
 
 
-        } else {
-            status.setStatusCode(404);
-            status.setMessage("Account not found");
-
-        }
-        return new ResponseEntity<>(getResultObject(request), httpStatus);
-    }
-
-
-    @GetMapping("/close-account/{cardId}")
-    public ResponseEntity<ResultObject> closeAccount(@PathVariable long cardId,
-                                                     HttpServletRequest request) {
-
-        result = new ResultObject();
-        client = new Client();
-        status = new Status();
-        metaData = new MetaData();
-
-        if (accountService.accountValid(cardId)) {
-            if (!accountService.accountIsOpen(cardId)) {
-                status.setStatusCode(204);
-                status.setMessage("Account is already close");
-            } else {
-                accountService.closeAccount(cardId);
-                status.setStatusCode(204);
-                status.setMessage("Account successfully closed");
-            }
-        } else {
-            status.setStatusCode(404);
-            status.setMessage("Account not found");
-
-        }
-        return new ResponseEntity<>(getResultObject(request), httpStatus);
-    }
-
-    @GetMapping("/open-account/{cardId}")
-    public ResponseEntity<ResultObject> openAccount(@PathVariable long cardId,
-                                                    HttpServletRequest request) {
-
-        result = new ResultObject();
-        client = new Client();
-        status = new Status();
-        metaData = new MetaData();
-
-        if (accountService.accountValid(cardId)) {
-            if (accountService.accountIsOpen(cardId)) {
-                status.setStatusCode(204);
-                status.setMessage("Account is already open");
-            } else {
-                accountService.openAccount(cardId);
-                status.setStatusCode(204);
-                status.setMessage("Account successfully opened");
-            }
         } else {
             status.setStatusCode(404);
             status.setMessage("Account not found");
